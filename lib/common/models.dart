@@ -41,6 +41,7 @@ class Trans {
   final DateTime date;
   final String customerName;
   final String productName;
+  final int quantitiy;
   final double initalBalance;
   final double productPrice;
   final double resultingBalance;
@@ -50,6 +51,7 @@ class Trans {
     this.date,
     this.customerName,
     this.productName,
+    this.quantitiy,
     this.initalBalance,
     this.productPrice,
     this.resultingBalance,
@@ -63,6 +65,7 @@ class Trans {
       "date": this.date.toIso8601String(),
       "customerName": this.customerName,
       "productName": this.productName,
+      "quantity": this.quantitiy,
       "initalBalance": this.initalBalance,
       "productPrice": this.productPrice,
       "resultingBalance": this.resultingBalance,
