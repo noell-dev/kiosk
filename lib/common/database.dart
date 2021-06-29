@@ -6,7 +6,7 @@ import 'package:kiosk/common/models.dart';
 const DB_TABLES = [
   "CREATE TABLE customers(name TEXT PRIMARY KEY, balance DOUBLE)",
   "CREATE TABLE items(name TEXT PRIMARY KEY, price DOUBLE)",
-  "CREATE TABLE transactions(id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, customerName TEXT, productName TEXT, quantitiy INTEGER, initalBalanceDOUBLE, productPrice DOUBLE, resultingBalance Double)"
+  "CREATE TABLE transactions(id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, customerName TEXT, productName TEXT, quantity INTEGER, initalBalance DOUBLE, productPrice DOUBLE, resultingBalance DOUBLE)"
 ];
 
 /// Define the common Database for persistent non key-value data
@@ -116,7 +116,7 @@ Future<void> updateBalance(Customer customer) async {
   final List<Map<String, dynamic>> query = await db
       .query('customers', where: "name = ?", whereArgs: [customer.name]);
   if (query.isNotEmpty) {
-    oldBalance = double.parse(query[0]["balance"]);
+    oldBalance = query[0]["balance"];
     difference = customer.balance - oldBalance;
     insertItem(
         "transactions",

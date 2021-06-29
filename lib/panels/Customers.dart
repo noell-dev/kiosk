@@ -49,11 +49,13 @@ class _CustomersPanelState extends State<CustomersPanel> {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          EditBalanceOverlay(customer: _currentCustomer))
-                  .then((value) => _getCustomers()),
+              onPressed: _customerSelected
+                  ? () => showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              EditBalanceOverlay(customer: _currentCustomer))
+                      .then((value) => _getCustomers())
+                  : () {},
               icon: Icon(Icons.edit))
         ],
         title: Row(
@@ -70,7 +72,7 @@ class _CustomersPanelState extends State<CustomersPanel> {
       ),
       body: _loading
           ? Center(child: CircularProgressIndicator())
-          : _noItems
+          : _customers.length == 0
               ? Center(child: Text("Noch keine Kunden"))
               : ListView.builder(
                   itemCount: _customers.length,
@@ -91,7 +93,6 @@ class _CustomersPanelState extends State<CustomersPanel> {
                 ),
       floatingActionButton: _viewFAB
           ? FloatingActionButton(
-              // TODO: impement adding customers
               onPressed: () => showDialog(
                       context: context,
                       builder: (BuildContext context) =>

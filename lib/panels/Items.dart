@@ -17,7 +17,6 @@ class ItemsPanel extends StatefulWidget {
 
 class _ItemsPanelState extends State<ItemsPanel> {
   bool _loading = true;
-  bool _noItems = false;
   bool _viewFAB = true;
 
   List<Item> _items = [Item("Test", 0)];
@@ -27,13 +26,11 @@ class _ItemsPanelState extends State<ItemsPanel> {
     if (_temp.isNotEmpty) {
       setState(() {
         _loading = false;
-        _noItems = false;
         _items = _temp;
       });
     } else {
       setState(() {
         _loading = false;
-        _noItems = true;
         _items = _temp;
       });
     }
@@ -53,7 +50,7 @@ class _ItemsPanelState extends State<ItemsPanel> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : _noItems
+          : _items.length == 0
               ? Center(
                   child: Text("Keine Items bisher."),
                 )
