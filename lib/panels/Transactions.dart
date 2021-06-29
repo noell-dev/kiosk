@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kiosk/common/database.dart';
 import 'package:kiosk/common/models.dart';
 
 class TransactionsPanel extends StatefulWidget {
@@ -11,23 +12,28 @@ class TransactionsPanel extends StatefulWidget {
 }
 
 class _TransactionsPanelState extends State<TransactionsPanel> {
-  List<Trans> _transactions = [
-    Trans(
-      DateTime.now(),
-      "customerName",
-      "productName",
-      4,
-      2,
-      10,
-      2,
-      id: 0,
-    )
-  ];
+  bool _loading = true;
+  // ToDo: https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple
+
+  List<Trans> _transactions = [];
+  void _getTransactions() async {
+    List<Trans> _temp = await getTransactions();
+    if (_temp.isNotEmpty) {
+      setState(() {
+        _loading = false;
+        _transactions = _temp;
+      });
+    } else {
+      setState(() {
+        _loading = false;
+        _transactions = _temp;
+      });
+    }
+  }
 
   @override
   void initState() {
-    // TODO: implement getting Transactions
-
+    _getTransactions();
     super.initState();
   }
 
@@ -35,19 +41,28 @@ class _TransactionsPanelState extends State<TransactionsPanel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Verlauf:")),
-      body: _transactions.length == 0
+      body: _loading
           ? Center(
-              child: Text("Nothing yet"),
+              child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              itemCount: _transactions.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                    title: Text(
-                  "${_transactions[index].customerName}",
-                ));
-              },
-            ),
+          : _transactions.length == 0
+              ? Center(
+                  child: Text("Nothing yet"),
+                )
+              : ListView.builder(
+                  itemCount: _transactions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        "${_transactions[index].customerName} ",
+                      ),
+                      subtitle: Text(
+                          "${_transactions[index].quantitiy}x ${_transactions[index].productName} (${_transactions[index].productPrice})"),
+                      trailing: Text(
+                          "${_transactions[index].initalBalance} -> ${_transactions[index].resultingBalance}"),
+                    );
+                  },
+                ),
     );
   }
 }

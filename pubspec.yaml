@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite: ^2.0.0
+  # ToDo: https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple
+  provider: ^5.0.0
   
 
 
