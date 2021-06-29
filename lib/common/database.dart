@@ -70,7 +70,7 @@ Future<List<Item>> getItems() async {
   });
 }
 
-Future<List<Trans>> getTrensactions() async {
+Future<List<Trans>> getTransactions() async {
   // get database reference
   final Database db = await database();
 
@@ -81,7 +81,6 @@ Future<List<Trans>> getTrensactions() async {
   // convert the List<Map<String, dynamic>> to a List<Marks>
   return List.generate(maps.length, (index) {
     return Trans(
-      maps[index]["id"],
       maps[index]["date"],
       maps[index]["customerName"],
       maps[index]["productName"],
@@ -89,6 +88,7 @@ Future<List<Trans>> getTrensactions() async {
       maps[index]["initalBalance"],
       maps[index]["productPrice"],
       maps[index]["resultingBalance"],
+      id: maps[index]["id"],
     );
   });
 }
@@ -106,6 +106,31 @@ Future<void> insertItem(String table, var item) async {
     item.toMap(),
     conflictAlgorithm: ConflictAlgorithm.replace,
   );
+}
+
+Future<void> updateBalance(Customer customer) async {
+  final Database db = await database();
+  double oldBalance;
+  double difference;
+
+  final List<Map<String, dynamic>> query = await db
+      .query('customers', where: "name = ?", whereArgs: [customer.name]);
+  if (query.isNotEmpty) {
+    oldBalance = double.parse(query[0]["balance"]);
+    difference = customer.balance - oldBalance;
+    insertItem(
+        "transactions",
+        Trans(
+          DateTime.now(),
+          customer.name,
+          "Ein/Auszahlung",
+          1,
+          oldBalance,
+          difference,
+          customer.balance,
+        ));
+    insertItem("customers", customer);
+  }
 }
 
 Future<void> removeCustomer(String name) async {
