@@ -61,61 +61,68 @@ class _ItemsPanelState extends State<ItemsPanel> {
                   itemCount: _items.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      trailing: Container(
-                          width: 200,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              TextButton(
-                                child: Text("1x"),
-                                // ToDo: Add "buying" of items
-                                onPressed: () {},
-                                style: ButtonStyle(backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.pressed)) {
-                                      return Colors.amber.withOpacity(0.5);
-                                    }
-                                    return Colors
-                                        .amber; // Use the component's default.
-                                  },
-                                )),
-                              ),
-                              TextButton(
-                                child: Text("5x"),
-                                // ToDo: Add "buying" of items
-                                onPressed: () {},
-                                style: ButtonStyle(backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.pressed)) {
-                                      return Colors.amber.withOpacity(0.5);
-                                    }
-                                    return Colors
-                                        .amber; // Use the component's default.
-                                  },
-                                )),
-                              ),
-                              TextButton(
-                                child: Text("10x"),
-                                // ToDo: Add "buying" of items
-                                onPressed: () {},
-                                style: ButtonStyle(backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.pressed)) {
-                                      return Colors.amber.withOpacity(0.5);
-                                    }
-                                    return Colors
-                                        .amber; // Use the component's default.
-                                  },
-                                )),
-                              ),
-                            ],
-                          )),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: TextButton(
+                              child: Text("1x"),
+                              // ToDo: Add "buying" of items
+                              onPressed: () {},
+                              style: ButtonStyle(backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return Colors.amber.withOpacity(0.5);
+                                  }
+                                  return Colors
+                                      .amber; // Use the component's default.
+                                },
+                              )),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: TextButton(
+                              child: Text("5x"),
+                              // ToDo: Add "buying" of items
+                              onPressed: () {},
+                              style: ButtonStyle(backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return Colors.amber.withOpacity(0.5);
+                                  }
+                                  return Colors
+                                      .amber; // Use the component's default.
+                                },
+                              )),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: TextButton(
+                              child: Text("10x"),
+                              // ToDo: Add "buying" of items
+                              onPressed: () {},
+                              style: ButtonStyle(backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return Colors.amber.withOpacity(0.5);
+                                  }
+                                  return Colors
+                                      .amber; // Use the component's default.
+                                },
+                              )),
+                            ),
+                          ),
+                        ],
+                      ),
                       title: Text(
                         "${_items[index].name}",
                       ),
