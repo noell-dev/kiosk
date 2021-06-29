@@ -68,6 +68,7 @@ class _ItemsPanelState extends State<ItemsPanel> {
                             children: [
                               TextButton(
                                 child: Text("1x"),
+                                // ToDo: Add "buying" of items
                                 onPressed: () {},
                                 style: ButtonStyle(backgroundColor:
                                     MaterialStateProperty.resolveWith<Color>(
@@ -83,6 +84,7 @@ class _ItemsPanelState extends State<ItemsPanel> {
                               ),
                               TextButton(
                                 child: Text("5x"),
+                                // ToDo: Add "buying" of items
                                 onPressed: () {},
                                 style: ButtonStyle(backgroundColor:
                                     MaterialStateProperty.resolveWith<Color>(
@@ -98,6 +100,7 @@ class _ItemsPanelState extends State<ItemsPanel> {
                               ),
                               TextButton(
                                 child: Text("10x"),
+                                // ToDo: Add "buying" of items
                                 onPressed: () {},
                                 style: ButtonStyle(backgroundColor:
                                     MaterialStateProperty.resolveWith<Color>(
@@ -156,6 +159,7 @@ class _AddItemsOverlayState extends State<AddItemsOverlay> {
         key: _itemKey,
         child: Column(
           children: [
+            // ToDo: Add texts
             TextFormField(
               onSaved: (String? value) {
                 name = value!;
@@ -167,6 +171,7 @@ class _AddItemsOverlayState extends State<AddItemsOverlay> {
                 return null;
               },
             ),
+            // ToDo: Add texts
             TextFormField(
               onSaved: (String? value) {
                 price = double.parse(value!);
