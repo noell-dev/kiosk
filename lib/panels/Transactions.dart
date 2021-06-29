@@ -12,7 +12,16 @@ class TransactionsPanel extends StatefulWidget {
 
 class _TransactionsPanelState extends State<TransactionsPanel> {
   List<Trans> _transactions = [
-    Trans(0, DateTime.now(), "customerName", "productName", 4, 2, 10, 2)
+    Trans(
+      DateTime.now(),
+      "customerName",
+      "productName",
+      4,
+      2,
+      10,
+      2,
+      id: 0,
+    )
   ];
 
   @override

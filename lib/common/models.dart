@@ -47,15 +47,15 @@ class Trans {
   final double resultingBalance;
 
   Trans(
-    this.id,
     this.date,
     this.customerName,
     this.productName,
     this.quantitiy,
     this.initalBalance,
     this.productPrice,
-    this.resultingBalance,
-  );
+    this.resultingBalance, {
+    this.id = 0,
+  });
 
   // Convert Item into a Map, suitable for the Database.
   Map<String, dynamic> toMap() {
