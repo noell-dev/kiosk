@@ -1,16 +1,7 @@
 # kiosk
 
-A new Flutter project.
+This very Basic Kiosk is designed to work only with a Base of Customers who pay regularly but not on every visit.
 
-## Getting Started
+Thus, they have a "Balance" how high the individual debt or credit is.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This Project is made with Flutter and is Licenced under the BSD 3-Clause License
