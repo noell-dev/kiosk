@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:kiosk/common/models.dart';
 import 'package:kiosk/panels/Customers.dart';
 import 'package:kiosk/panels/Items.dart';
 import 'package:kiosk/panels/Transactions.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => TransListModel()),
+    ChangeNotifierProvider(create: (context) => CustomerListModel())
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

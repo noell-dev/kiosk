@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:kiosk/common/models.dart';
+import 'package:provider/provider.dart';
 
 const DB_TABLES = [
   "CREATE TABLE customers(name TEXT PRIMARY KEY, balance DOUBLE)",
@@ -70,25 +72,23 @@ Future<List<Item>> getItems() async {
   });
 }
 
-Future<List<Trans>> getTransactions() async {
+Future<List<Trans>> getTransactions(String customer) async {
   // get database reference
   final Database db = await database();
 
   // query for all marks for the selected year
-  final List<Map<String, dynamic>> maps = await db.query(
-    'transactions',
-  );
+  final List<Map<String, dynamic>> maps = await db
+      .query('transactions', where: "customerName = ?", whereArgs: [customer]);
   // convert the List<Map<String, dynamic>> to a List<Marks>
   return List.generate(maps.length, (index) {
     return Trans(
-      maps[index]["date"],
+      DateTime.parse(maps[index]["date"]),
       maps[index]["customerName"],
       maps[index]["productName"],
       maps[index]["quantity"],
       maps[index]["initalBalance"],
       maps[index]["productPrice"],
       maps[index]["resultingBalance"],
-      id: maps[index]["id"],
     );
   });
 }
@@ -108,7 +108,7 @@ Future<void> insertItem(String table, var item) async {
   );
 }
 
-Future<void> updateBalance(Customer customer) async {
+Future<void> updateBalance(BuildContext context, Customer customer) async {
   final Database db = await database();
   double oldBalance;
   double difference;
@@ -118,18 +118,17 @@ Future<void> updateBalance(Customer customer) async {
   if (query.isNotEmpty) {
     oldBalance = query[0]["balance"];
     difference = customer.balance - oldBalance;
-    insertItem(
-        "transactions",
-        Trans(
-          DateTime.now(),
-          customer.name,
-          "Ein/Auszahlung",
-          1,
-          oldBalance,
-          difference,
-          customer.balance,
-        ));
-    insertItem("customers", customer);
+    Provider.of<TransListModel>(context, listen: false).addTransaction(Trans(
+      DateTime.now(),
+      customer.name,
+      "Ein/Auszahlung",
+      1,
+      oldBalance,
+      difference,
+      customer.balance,
+    ));
+    Provider.of<CustomerListModel>(context, listen: false)
+        .updateCustomer(customer);
   }
 }
 

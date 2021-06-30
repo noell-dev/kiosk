@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kiosk/common/database.dart';
 import 'package:kiosk/common/models.dart';
+import 'package:kiosk/panels/Items.dart';
+import 'package:provider/provider.dart';
 
 class CustomersPanel extends StatefulWidget {
   CustomersPanel({
@@ -12,92 +14,74 @@ class CustomersPanel extends StatefulWidget {
 }
 
 class _CustomersPanelState extends State<CustomersPanel> {
-  Customer _currentCustomer = Customer("nicht_ausgewählt", 0);
-  bool _customerSelected = false;
-  bool _loading = true;
   bool _viewFAB = true;
-  bool _noItems = false;
 
   List<Customer> _customers = [Customer("Test", 0)];
 
-  void _getCustomers() async {
-    List<Customer> _temp = await getCustomers();
-    if (_temp.isNotEmpty) {
-      setState(() {
-        _loading = false;
-        _noItems = false;
-        _customers = _temp;
-      });
-    } else {
-      setState(() {
-        _loading = false;
-        _noItems = true;
-        _customers = _temp;
-      });
-    }
-  }
-
   @override
   void initState() {
-    _getCustomers();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<CustomerListModel>(context, listen: false).reloadCustomerList();
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-              onPressed: _customerSelected
-                  ? () => showDialog(
+          Consumer<CustomerListModel>(
+              builder: (context, customerModel, child) => IconButton(
+                  onPressed: customerModel.cc.name != "_null_"
+                      ? () => showDialog(
                           context: context,
                           builder: (BuildContext context) =>
-                              EditBalanceOverlay(customer: _currentCustomer))
-                      .then((value) => _getCustomers())
-                  : () {},
-              icon: Icon(Icons.edit))
+                              EditBalanceOverlay(customer: customerModel.cc))
+                      : () {},
+                  icon: Icon(Icons.edit)))
         ],
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(_customerSelected
-                ? "Kunde: ${_currentCustomer.name}"
-                : "Kein Kunde ausgewählt"),
-            Text(_customerSelected
-                ? "Kontostand: ${_currentCustomer.balance}€"
-                : "Kontostand: --€"),
-          ],
+        title: Consumer<CustomerListModel>(
+            builder: (context, customerModel, child) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(customerModel.cc.name != "_null_"
+                  ? "Kunde: ${customerModel.cc.name}"
+                  : "Kein Kunde ausgewählt"),
+              Text(customerModel.cc.name != "_null_"
+                  ? "Kontostand: ${customerModel.cc.balance}€"
+                  : "Kontostand: --€"),
+            ],
+          );
+        }),
+      ),
+      body: Consumer<CustomerListModel>(
+        builder: (context, consumerList, child) => ListView.builder(
+          itemCount: consumerList.list.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(
+                "${consumerList.list[index].name}",
+              ),
+              subtitle: Text("${consumerList.list[index].balance}"),
+              onTap: () {
+                Provider.of<CustomerListModel>(context, listen: false)
+                    .updateCC(consumerList.list[index]);
+                Provider.of<TransListModel>(context, listen: false)
+                    .reloadTransactions(consumerList.list[index]);
+              },
+            );
+          },
         ),
       ),
-      body: _loading
-          ? Center(child: CircularProgressIndicator())
-          : _customers.length == 0
-              ? Center(child: Text("Noch keine Kunden"))
-              : ListView.builder(
-                  itemCount: _customers.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        "${_customers[index].name}",
-                      ),
-                      subtitle: Text("${_customers[index].balance}"),
-                      onTap: () {
-                        setState(() {
-                          _currentCustomer = _customers[index];
-                          _customerSelected = true;
-                        });
-                      },
-                    );
-                  },
-                ),
       floatingActionButton: _viewFAB
           ? FloatingActionButton(
               onPressed: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          AddCustomersOverlay(customers: _customers))
-                  .then((value) => _getCustomers()),
+                  context: context,
+                  builder: (BuildContext context) =>
+                      AddCustomersOverlay(customers: _customers)).then(
+                  (value) =>
+                      Provider.of<CustomerListModel>(context, listen: false)
+                          .reloadCustomerList()),
               tooltip: ' Add',
               child: Icon(Icons.add),
             )
@@ -131,7 +115,8 @@ class _AddCustomersOverlayState extends State<AddCustomersOverlay> {
             // ToDo: Add texts
             TextFormField(
               onSaved: (String? value) {
-                insertItem("customers", Customer(value!, 0));
+                Provider.of<CustomerListModel>(context, listen: false)
+                    .addCustomer(Customer(value!, 0));
                 Navigator.of(context).pop();
               },
               validator: (String? value) {
@@ -175,7 +160,7 @@ class _EditBalanceOverlayState extends State<EditBalanceOverlay> {
 
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Guthaben von ${widget.customer}"),
+      title: Text("Aktuelles Guthaben von ${widget.customer.name}"),
       content: Form(
         key: _balanceKey,
         child: Column(
@@ -183,13 +168,16 @@ class _EditBalanceOverlayState extends State<EditBalanceOverlay> {
             // ToDo: Add texts
             TextFormField(
               onSaved: (String? value) {
-                updateBalance(
+                updateBalance(context,
                     Customer(widget.customer.name, double.parse(value!)));
                 Navigator.of(context).pop();
               },
               validator: (String? value) {
                 if (value?.isEmpty ?? false) {
-                  return "Bitte Text eingeben";
+                  return "Bitte eine Zahl eingeben";
+                }
+                if (!isNumeric(value!)) {
+                  return "bitte eine Zahl eingeben";
                 }
                 return null;
               },
