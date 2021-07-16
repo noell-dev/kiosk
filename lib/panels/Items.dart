@@ -163,29 +163,37 @@ class _AddItemsOverlayState extends State<AddItemsOverlay> {
         key: _itemKey,
         child: Column(
           children: [
-            // ToDo: Add texts
             TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.label),
+                hintText: 'Was steht auf der Packung?',
+                labelText: 'Artikelbezeichnung',
+              ),
               onSaved: (String? value) {
                 name = value!;
               },
               validator: (String? value) {
                 if (value?.isEmpty ?? false) {
-                  return "Bitte Text eingeben";
+                  return "Artikelbezeichnung muss Text sein.";
                 }
                 return null;
               },
             ),
-            // ToDo: Add texts
             TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.euro),
+                hintText: 'Was letzter Preis?',
+                labelText: 'Preis',
+              ),
               onSaved: (String? value) {
                 price = double.parse(value!);
               },
               validator: (String? value) {
                 if (value == null) {
-                  return "Bitte eine Zahl eingeben:";
+                  return "Dieses Feld ist ein Pflichtfeld";
                 } else {
                   if (value.isEmpty || !isNumeric(value)) {
-                    return "Bitte eine Zahl eingeben";
+                    return "Dezimalzahl mit Punkt getrennt.";
                   }
                   return null;
                 }
