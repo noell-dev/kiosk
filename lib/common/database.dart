@@ -108,28 +108,37 @@ Future<void> insertItem(String table, var item) async {
   );
 }
 
-Future<void> updateBalance(BuildContext context, Customer customer) async {
+Future<void> updateBalance(BuildContext context, Customer customer,
+    bool isAuszahlung, double value) async {
   final Database db = await database();
-  double oldBalance;
-  double difference;
+  double newBalance;
 
-  final List<Map<String, dynamic>> query = await db
-      .query('customers', where: "name = ?", whereArgs: [customer.name]);
-  if (query.isNotEmpty) {
-    oldBalance = query[0]["balance"];
-    difference = customer.balance - oldBalance;
+  if (isAuszahlung) {
+    newBalance = customer.balance - value;
     Provider.of<TransListModel>(context, listen: false).addTransaction(Trans(
       DateTime.now(),
       customer.name,
-      "Ein/Auszahlung",
+      "Auszahlung",
       1,
-      oldBalance,
-      difference,
       customer.balance,
+      value,
+      newBalance,
     ));
-    Provider.of<CustomerListModel>(context, listen: false)
-        .updateCustomer(customer);
+  } else {
+    newBalance = customer.balance + value;
+    Provider.of<TransListModel>(context, listen: false).addTransaction(Trans(
+      DateTime.now(),
+      customer.name,
+      "Einzahlung",
+      1,
+      customer.balance,
+      value,
+      newBalance,
+    ));
   }
+
+  Provider.of<CustomerListModel>(context, listen: false)
+      .updateCustomer(customer);
 }
 
 Future<void> removeCustomer(String name) async {
