@@ -112,8 +112,12 @@ class _AddCustomersOverlayState extends State<AddCustomersOverlay> {
         key: _customerKey,
         child: Column(
           children: [
-            // ToDo: Add texts
             TextFormField(
+              decoration: InputDecoration(
+                icon: Icon(Icons.person),
+                hintText: 'Wie heißt der Kunde?',
+                labelText: 'Name',
+              ),
               onSaved: (String? value) {
                 Provider.of<CustomerListModel>(context, listen: false)
                     .addCustomer(Customer(value!, 0));
@@ -121,14 +125,13 @@ class _AddCustomersOverlayState extends State<AddCustomersOverlay> {
               },
               validator: (String? value) {
                 if (value?.isEmpty ?? false) {
-                  return "Bitte Text eingeben";
+                  return "Dieses Feld ist ein Pflichtfeld";
                 } else if (widget.customers.contains(value!)) {
-                  return "Kunde bereits vorhanden";
+                  return "Kunde ist bereits vorhanden";
                 }
                 return null;
               },
             ),
-
             ElevatedButton(
                 onPressed: () {
                   if (_customerKey.currentState?.validate() ?? false) {
@@ -157,41 +160,64 @@ class EditBalanceOverlay extends StatefulWidget {
 
 class _EditBalanceOverlayState extends State<EditBalanceOverlay> {
   final _balanceKey = GlobalKey<FormState>();
+  bool _einauszahlung = true;
 
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Aktuelles Guthaben von ${widget.customer.name}"),
-      content: Form(
-        key: _balanceKey,
-        child: Column(
-          children: [
-            // ToDo: Add texts
-            TextFormField(
-              onSaved: (String? value) {
-                updateBalance(context,
-                    Customer(widget.customer.name, double.parse(value!)));
-                Navigator.of(context).pop();
-              },
-              validator: (String? value) {
-                if (value?.isEmpty ?? false) {
-                  return "Bitte eine Zahl eingeben";
-                }
-                if (!isNumeric(value!)) {
-                  return "bitte eine Zahl eingeben";
-                }
-                return null;
-              },
+      title: Text("Guthaben ${widget.customer.name} anpassen:"),
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            "Aktuelles Guthaben: ${widget.customer.balance}€",
+            textAlign: TextAlign.left,
+          ),
+          SwitchListTile(
+              title: Text("Auszahlung?"),
+              value: _einauszahlung,
+              onChanged: (bool newValue) {
+                setState(() {
+                  _einauszahlung = newValue;
+                });
+              }),
+          Form(
+            key: _balanceKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.euro),
+                    hintText: _einauszahlung
+                        ? 'Wieviel wurde Ausgezahlt?'
+                        : 'Wieviel wurde Eingezahlt?',
+                    labelText: _einauszahlung ? 'Auszahlung' : 'Einzahlung',
+                  ),
+                  onSaved: (String? value) {
+                    updateBalance(context, widget.customer, _einauszahlung,
+                        double.parse(value!));
+                    Navigator.of(context).pop();
+                  },
+                  validator: (String? value) {
+                    if (value?.isEmpty ?? false) {
+                      return "Dies ist ein Pflichtfeld.";
+                    }
+                    if (!isNumeric(value!)) {
+                      return "Dezimalzahlen mit Punkt getrennt.";
+                    }
+                    return null;
+                  },
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      if (_balanceKey.currentState?.validate() ?? false) {
+                        _balanceKey.currentState?.save();
+                      }
+                    },
+                    child: Text("Speichern"))
+              ],
             ),
-
-            ElevatedButton(
-                onPressed: () {
-                  if (_balanceKey.currentState?.validate() ?? false) {
-                    _balanceKey.currentState?.save();
-                  }
-                },
-                child: Text("Speichern"))
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
